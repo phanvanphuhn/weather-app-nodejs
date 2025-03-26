@@ -51,6 +51,19 @@ app.get("/weather", (req, res) => {
   });
 });
 
+app.get("/products", (req, res) => {
+  if (!req.query.address) {
+    return res.send({
+      error: "You must provide an address",
+    });
+  }
+  res.send({
+    forecast: "It is sunny",
+    location: "Philadelphia",
+    address: req.query.address,
+  });
+});
+
 app.get("*", (req, res) => {
   res.render("404", {
     errorMessage: "Page not found.",
