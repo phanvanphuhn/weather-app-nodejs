@@ -1,29 +1,29 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
-const uri = "mongodb://localhost:27017";
-const client = new MongoClient(uri);
+const connectionURL = "mongodb://127.0.0.1:27017";
+const databaseName = "testdb";
 
-async function run() {
+async function main() {
   try {
-    await client.connect();
-    console.log("Connected to MongoDB");
+    // Connect to MongoDB
+    const client = await MongoClient.connect(connectionURL);
+    const db = client.db(databaseName);
 
-    const database = client.db("testdb");
-    const tasks = database.collection("tasks");
+    await db
+      .collection("tasks")
+      .deleteMany({ age: 20 })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    const newUser = [
-      { name: "John Doe", age: 30 },
-      { name: "Jane Doe", age: 25 },
-      { name: "Jim Doe", age: 20 },
-    ];
-    const result = await tasks.insertMany(newUser);
-
-    console.log(`Inserted user with id: ${result.insertedId}`);
-  } catch (error) {
-    console.error("Unable to insert user", error);
-  } finally {
+    // Close the connection when done
     await client.close();
+  } catch (error) {
+    console.log("Error:", error.message);
   }
 }
 
-run();
+main().catch(console.error);
