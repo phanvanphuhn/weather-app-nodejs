@@ -78,7 +78,7 @@ router.get("/users/:id", auth, async (req, res) => {
   }
 });
 
-router.patch("/users/:id", auth, async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
   const _id = req.params.id;
 
   const updates = Object.keys(req.body);
@@ -92,30 +92,21 @@ router.patch("/users/:id", auth, async (req, res) => {
   }
 
   try {
-    const user = await User.findById(_id);
-    updates.forEach((update) => (user[update] = req.body[update]));
-    await user.save();
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
 
-    if (!user) {
-      return res.status(404).send();
-    }
-
-    res.send(user);
+    res.send(req.user);
   } catch (e) {
     res.status(400).send(e);
   }
 });
 
-router.delete("/users/:id", auth, async (req, res) => {
+router.delete("/users/me", auth, async (req, res) => {
   const _id = req.params.id;
 
   try {
-    const user = await User.findByIdAndDelete(_id);
-    if (!user) {
-      return res.status(404).send();
-    }
-
-    res.send(user);
+    await req.user.remove();
+    res.send(req.user);
   } catch (e) {
     res.status(500).send(e);
   }
