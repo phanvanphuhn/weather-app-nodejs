@@ -79,8 +79,6 @@ router.get("/users/:id", auth, async (req, res) => {
 });
 
 router.patch("/users/me", auth, async (req, res) => {
-  const _id = req.params.id;
-
   const updates = Object.keys(req.body);
   const allowedUpdates = ["name", "email", "password", "age"];
   const isValidOperation = updates.every((update) =>
@@ -102,8 +100,6 @@ router.patch("/users/me", auth, async (req, res) => {
 });
 
 router.delete("/users/me", auth, async (req, res) => {
-  const _id = req.params.id;
-
   try {
     await req.user.remove();
     res.send(req.user);
